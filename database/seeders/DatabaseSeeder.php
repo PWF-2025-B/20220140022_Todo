@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Todo;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Cek apakah user sudah ada agar tidak duplikat
+        if (!User::where('email', 'admin@admin.com')->exists()) {
+            User::create([
+                'name' => 'Admin',
+                'email' => 'admin@admin.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'), // Gunakan Hash::make untuk keamanan
+                'remember_token' => Str::random(10),
+                'is_admin' => true
+            ]);
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Menjalankan factory untuk membuat data dummy
+        User::factory(100)->create();
+        Todo::factory(500)->create();
     }
 }
