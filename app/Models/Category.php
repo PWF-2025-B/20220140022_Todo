@@ -9,17 +9,13 @@ class Category extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name',
+        'title',
+        'user_id',
     ];
 
     /**
-     * Get the todos for the category.
+     * Get all todos that belong to this category.
      */
     public function todos()
     {

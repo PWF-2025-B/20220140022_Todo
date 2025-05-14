@@ -2,30 +2,25 @@
 
 namespace Database\Factories;
 
-use App\Models\Todo;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Todo>
+ */
 class TodoFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = Todo::class;
-
-    /**
      * Define the model's default state.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence(4),
-            'category_id' => Category::factory(),
-            'is_complete' => $this->faker->boolean(), // true/false (completed/ongoing)
+            'user_id' => rand(1, 100),
+            'category_id' => rand(1, 100),
+            'title' => ucwords(fake()->sentence()),
+            'is_done' => rand(0, 1),
         ];
     }
 }

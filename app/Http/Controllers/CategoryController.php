@@ -12,7 +12,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('todos')->get();
+        // Eager load the 'todos' relationship to avoid null errors
+        $categories = Category::with('todos')  // Ensure you're using 'todos' in the relation
+            ->where('user_id', auth()->user()->id)
+            ->get();
+    
         return view('category.index', compact('categories'));
     }
 
@@ -30,14 +34,24 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|max:255',
         ]);
 
         Category::create([
-            'name' => $request->name,
+            'user_id' => auth()->user()->id,
+            'title'   => $request->title,
         ]);
 
-        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
+        return redirect()->route('category.index')
+            ->with('success', 'Category created successfully!');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Category $category)
+    {
+        // Not implemented
     }
 
     /**
@@ -45,7 +59,12 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('category.edit', compact('category'));
+        if (auth()->user()->id === $category->user_id) {
+            return view('category.edit', compact('category'));
+        }
+
+        return redirect()->route('category.index')
+            ->with('danger', 'You are not authorized to edit this category!');
     }
 
     /**
@@ -54,14 +73,15 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|max:255',
         ]);
 
         $category->update([
-            'name' => $request->name,
+            'title' => ucfirst($request->title),
         ]);
 
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
+        return redirect()->route('category.index')
+            ->with('success', 'Todo category updated successfully!');
     }
 
     /**
@@ -69,7 +89,14 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
+        if (auth()->user()->id === $category->user_id) {
+            $category->delete();
+
+            return redirect()->route('category.index')
+                ->with('success', 'Category deleted successfully!');
+        }
+
+        return redirect()->route('category.index')
+            ->with('danger', 'You are not authorized to delete this category!');
     }
 }

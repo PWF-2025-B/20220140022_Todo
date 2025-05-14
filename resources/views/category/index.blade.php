@@ -1,56 +1,78 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Todo Category') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="max-w-5xl mx-auto py-10">
-    <div class="bg-gray-900 text-white rounded-xl shadow-md p-6">
-        <h1 class="text-2xl font-semibold mb-6">Todo Category</h1>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+                <div class="p-6 text-xl text-gray-900 dark:text-gray-100">
+                    <div class="flex items-center justify-between">
+                        <x-create-button href="{{ route('category.create') }}" />
 
-        <!-- Tombol CREATE -->
-        <div class="mb-4">
-            <a href="{{ route('categories.create') }}"
-               class="bg-white text-black font-semibold px-4 py-2 rounded-md hover:bg-gray-200 transition">
-                CREATE
-            </a>
-        </div>
+                        <div>
+                            @if (session('success'))
+                                <p x-data="{ show: true }" x-show="show" x-transition
+                                   x-init="setTimeout(() => show = false, 5000)"
+                                   class="text-sm text-green-600 dark:text-green-400">
+                                    {{ session('success') }}
+                                </p>
+                            @endif
 
-        <!-- Tabel -->
-        <div class="overflow-x-auto">
-            <table class="w-full bg-gray-800 rounded-lg text-sm">
-                <thead class="bg-gray-700 text-white uppercase text-xs">
-                    <tr>
-                        <th class="px-6 py-3 text-left">Name</th>
-                        <th class="px-6 py-3 text-left">Todos</th>
-                        <th class="px-6 py-3 text-left">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-700">
-                    @forelse ($categories as $category)
-                        <tr class="hover:bg-gray-700">
-                            <td class="px-6 py-4">{{ $category->name }}</td>
-                            <td class="px-6 py-4">{{ $category->todos_count }}</td>
-                            <td class="px-6 py-4">
-                                <div class="flex gap-4">
-                                    <a href="{{ route('categories.edit', $category) }}" class="text-blue-400 hover:text-blue-600">
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-400 hover:text-red-600">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="px-6 py-4 text-center text-gray-400">No categories found.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            @if (session('danger'))
+                                <p x-data="{ show: true }" x-show="show" x-transition
+                                   x-init="setTimeout(() => show = false, 5000)"
+                                   class="text-sm text-red-600 dark:text-red-400">
+                                    {{ session('danger') }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tambahkan margin top agar tabel agak turun dari header -->
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Title</th>
+                                <th scope="col" class="px-6 py-3">Todo</th>
+                                <th scope="col" class="px-6 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($categories as $category)
+                                <tr class="odd:bg-white odd:dark:bg-gray-800 even:bg-gray-50 even:dark:bg-gray-700">
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        <a href="{{ route('category.edit', $category) }}" class="hover:underline">
+                                            {{ $category->title }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        {{ $category->todos ? $category->todos->count() : 0 }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <form action="{{ route('category.destroy', $category) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 dark:text-red-400">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="px-6 py-4 text-center font-medium text-gray-900 dark:text-white">
+                                        Empty
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

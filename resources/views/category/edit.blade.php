@@ -1,34 +1,40 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            {{ __('Edit Todo Category') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="max-w-3xl mx-auto py-10">
-    <div class="bg-gray-900 text-white rounded-xl shadow-md p-6">
-        <h1 class="text-2xl font-semibold mb-6">Edit Category</h1>
+    <div class="sm:py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white dark:bg-gray-800 sm:shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <form method="POST" action="{{ route('category.update', $category) }}" class="">
+                        @csrf
+                        @method('PATCH')
 
-        <form action="{{ route('categories.update', $category) }}" method="POST" class="space-y-6">
-            @csrf
-            @method('PUT')
+                        <div class="mb-6">
+                            <x-input-label for="title" :value="__('Title')" />
+                            <x-text-input
+                                id="title"
+                                name="title"
+                                type="text"
+                                class="block w-full mt-1"
+                                :value="old('title', $category->title)"
+                                required
+                                autofocus
+                                autocomplete="title"
+                            />
+                            <x-input-error class="mt-2" :messages="$errors->get('title')" />
+                        </div>
 
-            <!-- Input Name -->
-            <div>
-                <label for="name" class="block text-sm font-medium text-gray-300 mb-1">Category Name</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $category->name) }}"
-                       class="w-full bg-gray-800 border border-gray-700 rounded-md py-2 px-3 text-white focus:outline-none focus:ring focus:ring-blue-500"
-                       required>
+                        <div class="flex items-center gap-4">
+                            <x-primary-button>{{ __('Save') }}</x-primary-button>
+                            <x-cancel-button href="{{ route('category.index') }}" />
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="flex gap-4">
-                <button type="submit"
-                        class="bg-white text-black font-semibold px-4 py-2 rounded-md hover:bg-gray-200 transition">
-                    SAVE
-                </button>
-                <a href="{{ route('categories.index') }}"
-                   class="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-md transition">
-                    CANCEL
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-@endsection
+</x-app-layout>
