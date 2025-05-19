@@ -15,10 +15,18 @@ class Category extends Model
     ];
 
     /**
-     * Get all todos that belong to this category.
+     * Relasi: satu kategori memiliki banyak todo.
      */
     public function todos()
     {
         return $this->hasMany(Todo::class);
+    }
+
+    /**
+     * Relasi: kategori dimiliki oleh satu user.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

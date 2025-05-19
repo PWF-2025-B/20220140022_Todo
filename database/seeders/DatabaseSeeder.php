@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Todo;
 use App\Models\Category;
@@ -17,8 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Admin user
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
@@ -28,6 +26,17 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
+        // User biasa (ganti dengan data kamu)
+        User::factory()->create([
+            'name' => 'Muhamad Adri Muwafaq Khamid', // Ganti dengan nama lengkap kamu
+            'email' => 'adri.example@mail.com', // Ganti dengan email kamu
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+            'is_admin' => false,
+        ]);
+
+        // Tambahan data dummy
         User::factory(100)->create();
         Category::factory(200)->create();
         Todo::factory(500)->create();
