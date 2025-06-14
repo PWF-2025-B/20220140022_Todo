@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -18,14 +19,12 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
-
         if (empty($data['email']) || empty($data['password'])) {
             return response()->json([
                 'status_code' => 400,
                 'message' => 'Email dan password harus diisi',
             ], 400);
         }
-
         try {
             if (!$token = Auth::guard('api')->attempt($data)) {
                 return response()->json([
@@ -48,6 +47,7 @@ class AuthController extends Controller
                     'token' => $token,
                 ],
             ], 200);
+
         } catch (Exception $e) {
             return response()->json([
                 'status_code' => 500,
@@ -55,15 +55,38 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
-    /**
-     * Logout user yang sedang login.
+     /**
+     * @group Auth
+     *
+     * Logout user dari sistem.
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *   "status_code": 200,
+     *   "message": "Logout berhasil. Token telah dihapus."
+     * }
+     *
+     * @response 500 {
+     *   "status_code": 500,
+     *   "message": "Gagal logout, terjadi kesalahan."
+     * }
      */
-    public function logout()
-    {
-        Auth::guard('api')->logout();
+
+public function logout(Request $request)
+{
+    try {
+        JWTAuth::invalidate(JWTAuth::getToken());
+
         return response()->json([
-            'message' => 'Logout berhasil',
+            'status_code' => 200,
+            'message' => 'Logout berhasil. Token telah dihapus.'
         ], 200);
+    } catch (Exception $e) {
+        return response()->json([
+            'status_code' => 500,
+            'message' => 'Gagal logout, terjadi kesalahan.'
+        ], 500);
     }
+}
 }
